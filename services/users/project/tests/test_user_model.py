@@ -11,38 +11,46 @@ from project.tests.utils import add_user
 class TestUserModel(BaseTestCase):
 
     def test_add_user(self):
-        user = add_user('justatest', 'test@test.com')
+        user = add_user('justatest', 'test@test.com', 'greaterthaneight')
         db.session.add(user)
         db.session.commit()
         self.assertTrue(user.id)
         self.assertEqual(user.username, 'justatest')
         self.assertEqual(user.email, 'test@test.com')
         self.assertTrue(user.active)
+        self.assertTrue(user.password)
 
     def test_add_user_duplicate_username(self):
-        user = add_user('justatest', 'test@test.com')
+        user = add_user('justatest', 'test@test.com', 'greaterthaneight')
         db.session.add(user)
         db.session.commit()
         duplicate_user = User(
             username='justatest',
             email='test@test2.com',
+            password='password'
         )
         db.session.add(duplicate_user)
         self.assertRaises(IntegrityError, db.session.commit)
 
     def test_add_user_duplicate_email(self):
-        user = add_user('justatest', 'test@test.com')
+        user = add_user('justatest', 'test@test.com', 'greaterthaneight')
         db.session.add(user)
         db.session.commit()
         duplicate_user = User(
             username='justanothertest',
             email='test@test.com',
+            password='password'
         )
         db.session.add(duplicate_user)
         self.assertRaises(IntegrityError, db.session.commit)
 
+    def test_passwords_are_random(self):
+        user_one = add_user('justatest', 'test@test.com', 'greaterthaneight')
+        user_two = add_user('justatest2', 'test@test2.com', 'greaterthaneight')
+        self.assertNotEqual(user_one.password, user_two.password)
+
     def test_to_json(self):
-        user = add_user('justatest', 'test@test.com')
+        user = add_user('justatest', 'test@test.com', 'greaterthaneight')
         db.session.add(user)
         db.session.commit()
         self.assertTrue(isinstance(user.to_json(), dict))
