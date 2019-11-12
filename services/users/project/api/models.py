@@ -1,6 +1,6 @@
 from sqlalchemy.sql import func
 
-from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.security import generate_password_hash
 
 from project import db
 
